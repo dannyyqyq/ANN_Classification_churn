@@ -8,6 +8,7 @@ from src.exception import CustomException
 from src.logger import logging
 from src.utils import save_object
 from sklearn.preprocessing import OneHotEncoder, StandardScaler, FunctionTransformer
+import numpy as np
 
 
 @dataclass
@@ -45,7 +46,7 @@ class DataTransformation:
                                 (
                                     "Geography_OHE",
                                     OneHotEncoder(
-                                        handle_unknown="ignore", drop="first"
+                                        handle_unknown="ignore",
                                     ),
                                     cols_one_hot_encoder,
                                 )
@@ -75,12 +76,10 @@ class DataTransformation:
 
             target_column = "Exited"
             input_feature_train_df = train_df.drop(columns=[target_column], axis=1)
-            # not required for transformation
-            # target_feature_train_df = train_df[target_column]
+            target_feature_train_df = train_df[target_column]
 
             input_feature_test_df = test_df.drop(columns=[target_column], axis=1)
-            # not required for transformation
-            # target_feature_test_df = test_df[target_column]
+            target_feature_test_df = test_df[target_column]
 
             logging.info(f"Training columns: {input_feature_train_df.columns.tolist()}")
             logging.info(f"Target columns: {[target_column]}")
@@ -93,7 +92,14 @@ class DataTransformation:
                 input_feature_test_df
             )
 
-            # Convert arrays back to DataFrame, keeping only transformed data (no need for column names)
+            # np.c_ used to concentate arrays horizontally -side by side
+            train_array = np.c_[
+                input_feature_train_array, np.array(target_feature_train_df)
+            ]
+            test_array = np.c_[
+                input_feature_test_array, np.array(target_feature_test_df)
+            ]
+
             train_df_transformed = pd.DataFrame(input_feature_train_array)
             test_df_transformed = pd.DataFrame(input_feature_test_array)
 
@@ -120,6 +126,8 @@ class DataTransformation:
             logging.info("Preprocessing object saved")
 
             return (
+                train_array,
+                test_array,
                 transformed_train_csv_path,
                 transformed_test_csv_path,
                 self.data_transformation_config.preprocessor_obj_file_path,
