@@ -6,6 +6,7 @@ tensorboard
 matplotlib
 streamlit
 logger
+dill
 pre-commit
 -e .
  # automatic trigger setup.py
