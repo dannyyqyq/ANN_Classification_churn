@@ -22,9 +22,13 @@ class DataTransformation:
     def __init__(self):
         self.data_transformation_config = DataTransformationConfig()
 
-    # External function for gender transformation
     def gender_transformer(self, df):
-        df["Gender"] = df["Gender"].replace({"Male": 0, "Female": 1})
+        if isinstance(df, dict):
+            df = pd.DataFrame([df])  # Convert dict to DataFrame
+
+        if "Gender" in df.columns:
+            df["Gender"] = df["Gender"].replace({"Male": 0, "Female": 1})
+
         return df
 
     def get_data_transformer(self):

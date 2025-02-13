@@ -24,3 +24,22 @@ def save_object(file_path, obj) -> object:
 
     except Exception as e:
         raise CustomException(e, sys)
+
+
+def load_object(file_path) -> str:
+    """
+    Load a Python object from a file using dill.
+
+    Arg:
+        file_path (str): The path to the file from which the object will be loaded.
+        obj (object): The Python object to be loaded.
+
+    Returns:
+        object: The loaded object.
+    """
+    try:
+        with open(file_path, "rb") as file_obj:
+            return dill.load(file_obj)
+
+    except Exception as e:
+        raise CustomException(e, sys)
