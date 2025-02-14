@@ -8,5 +8,5 @@ streamlit
 logger
 dill
 pre-commit
- # -e .
+-e .
  # automatic trigger setup.py

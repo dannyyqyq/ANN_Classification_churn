@@ -29,14 +29,20 @@ class ModelTrainer:
                     Dense(
                         64, activation="relu", input_shape=(X_train.shape[1],)
                     ),  # HL 1
+                    tf.keras.layers.BatchNormalization(),
+                    tf.keras.layers.Dropout(0.3),
                     Dense(32, activation="relu"),  # HL 2
+                    tf.keras.layers.BatchNormalization(),
+                    tf.keras.layers.Dropout(0.3),
                     Dense(16, activation="relu"),  # HL 3
-                    Dense(1, activation="sigmoid"),  # output layer
+                    tf.keras.layers.BatchNormalization(),
+                    tf.keras.layers.Dropout(0.3),
+                    Dense(1, activation="sigmoid"),  # Output layer
                 ]
             )
 
             # Compile the model
-            opt = tf.keras.optimizers.Adam(learning_rate=0.005)
+            opt = tf.keras.optimizers.Adam(learning_rate=0.001)
             loss = tf.keras.losses.BinaryCrossentropy()
             model.compile(
                 optimizer=opt,  # Adam optimizer
@@ -101,10 +107,10 @@ class ModelTrainer:
         try:
             logging.info("Splitting training and test input data")
             X_train, y_train, X_test, y_test = (
-                train_array[:, :-1],  # all rows, ex-last column
-                train_array[:, -1],  # all rows, last column
-                test_array[:, :-1],
-                test_array[:, -1],
+                train_array[:, :-1],  # All rows, excluding last column (features)
+                train_array[:, -1],  # Last column as target (labels)
+                test_array[:, :-1],  # All rows, excluding last column (features)
+                test_array[:, -1],  # Last column as target (labels)
             )
 
             logging.info(f"Shape of X_train: {X_train.shape}")
