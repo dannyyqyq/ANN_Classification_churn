@@ -8,6 +8,7 @@ from tensorflow.keras.layers import Dense
 from tensorflow.keras.callbacks import EarlyStopping, TensorBoard
 from src.exception import CustomException
 from src.logger import logging
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 
 
 @dataclass
@@ -73,6 +74,24 @@ class ModelTrainer:
                 callbacks=[early_stopping_callback, tensorflow_callback],
             )
 
+            # Evaluate model on test set
+            y_pred = (model.predict(X_test) > 0.5).astype(
+                int
+            )  # Threshold at 0.5 for binary classification
+            metrics = {
+                "accuracy": accuracy_score(y_test, y_pred),
+                "precision": precision_score(y_test, y_pred),
+                "recall": recall_score(y_test, y_pred),
+                "f1_score": f1_score(y_test, y_pred),
+            }
+
+            # Log the metrics
+            logging.info(
+                f"Model Evaluation Metrics - Accuracy: {metrics['accuracy']:.4f}"
+            )
+            logging.info(f"Precision (Churn = 1): {metrics['precision']:.4f}")
+            logging.info(f"Recall (Churn = 1): {metrics['recall']:.4f}")
+            logging.info(f"F1-Score (Churn = 1): {metrics['f1_score']:.4f}")
             # Plot and save the loss graph
             self.plot_loss(history)
 
